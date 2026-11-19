@@ -1,0 +1,720 @@
+<Window x:Class="course_project_shop_musical_instruments.Views.AdminMainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:helpers="clr-namespace:course_project_shop_musical_instruments.Helpers"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Панель администратора"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#F5F5F5">
+    <Window.Resources>
+        <helpers:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <helpers:StatusConverter x:Key="StatusConverter"/>
+        <helpers:OrderDeleteVisibilityConverter x:Key="OrderDeleteVisibilityConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <materialDesign:ColorZone Grid.Row="0" 
+                                  materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                  Padding="20" 
+                                  Mode="PrimaryMid">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="ShieldAccount" Width="32" Height="32" Margin="0,0,15,0" Foreground="White"/>
+                    <TextBlock Text="Панель администратора" 
+                               FontSize="24" FontWeight="Bold" 
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Command="{Binding NavigateToProfileCommand}"
+                            Margin="0,0,10,0"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            materialDesign:ButtonAssist.CornerRadius="5">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Account" Width="20" Height="20" Margin="0,0,8,0"/>
+                            <TextBlock Text="Профиль"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding LogoutCommand}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            Background="#E74C3C"
+                            materialDesign:ButtonAssist.CornerRadius="5">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Logout" Width="20" Height="20" Margin="0,0,8,0"/>
+                            <TextBlock Text="Выход"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:ColorZone>
+
+        <!-- Tabs -->
+        <TabControl Grid.Row="1" 
+                    materialDesign:ColorZoneAssist.Mode="PrimaryMid"
+                    Background="White">
+            <TabItem Header="Товары">
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="450"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid Grid.Column="0" Margin="0,0,20,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Button Grid.Row="0"
+                                Command="{Binding AdminProductsViewModel.AddNewProductCommand}" 
+                                Margin="0,0,0,15" 
+                                HorizontalAlignment="Left"
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                Background="#27AE60"
+                                materialDesign:ButtonAssist.CornerRadius="5">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" Margin="0,0,8,0"/>
+                                <TextBlock Text="Добавить товар"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <materialDesign:Card Grid.Row="1"
+                                            materialDesign:ShadowAssist.ShadowDepth="Depth1" 
+                                            Padding="0"
+                                            PreviewMouseWheel="Card_PreviewMouseWheel">
+                            <ScrollViewer x:Name="ProductsScrollViewer"
+                                          VerticalScrollBarVisibility="Auto" 
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <DataGrid x:Name="ProductsDataGrid"
+                                          ItemsSource="{Binding AdminProductsViewModel.Products}" 
+                                          AutoGenerateColumns="False" IsReadOnly="True"
+                                          HeadersVisibility="Column" GridLinesVisibility="None"
+                                          SelectionMode="Single"
+                                          BorderThickness="0"
+                                          Background="White"
+                                          RowHeight="50"
+                                          SelectionChanged="DataGrid_SelectionChanged"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          PreviewMouseWheel="DataGrid_PreviewMouseWheel">
+                                <DataGrid.Resources>
+                                    <!-- Стиль для ячеек -->
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="10,0"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                    
+                                    <!-- Стиль для заголовков колонок -->
+                                    <Style TargetType="DataGridColumnHeader">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="10,12"/>
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="#34495E"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                    </Style>
+                                    
+                                    <!-- Стиль для строк -->
+                                    <Style TargetType="DataGridRow">
+                                        <Setter Property="Background" Value="White"/>
+                                    </Style>
+                                    
+                                    <!-- Стиль для чекбокса -->
+                                    <Style x:Key="CenteredCheckBoxStyle" TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </Style>
+                                </DataGrid.Resources>
+                                
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Foreground" Value="#7F8C8D"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="FontWeight" Value="Normal"/>
+                                                <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                                <Setter Property="Foreground" Value="#2C3E50"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Категория" Binding="{Binding CategoryName}" Width="130">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Foreground" Value="#34495E"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Производитель" Binding="{Binding ManufacturerName}" Width="160">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Foreground" Value="#34495E"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Цена" Binding="{Binding Price, StringFormat='{}{0:N2} BYN'}" Width="120">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                                <Setter Property="Foreground" Value="#27AE60"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Остаток" Binding="{Binding StockQuantity}" Width="90">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="Foreground" Value="#34495E"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridCheckBoxColumn Header="Доступен" Binding="{Binding IsAvailable}" Width="100">
+                                        <DataGridCheckBoxColumn.ElementStyle>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.ElementStyle>
+                                        <DataGridCheckBoxColumn.EditingElementStyle>
+                                            <Style TargetType="CheckBox">
+                                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Setter Property="Margin" Value="0"/>
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </DataGridCheckBoxColumn.EditingElementStyle>
+                                    </DataGridCheckBoxColumn>
+                                    <DataGridTemplateColumn Header="Действия" Width="180">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" 
+                                                            HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center"
+                                                            Margin="0">
+                                                    <Button Command="{Binding DataContext.AdminProductsViewModel.EditProductCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Margin="0,0,8,0" 
+                                                            Style="{StaticResource MaterialDesignIconButton}"
+                                                            Background="#3498DB"
+                                                            Foreground="White"
+                                                            Width="36"
+                                                            Height="36"
+                                                            ToolTip="Редактировать"
+                                                            materialDesign:ButtonAssist.CornerRadius="4">
+                                                        <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18"/>
+                                                    </Button>
+                                                    <Button Command="{Binding DataContext.AdminProductsViewModel.DeleteProductCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Style="{StaticResource MaterialDesignIconButton}"
+                                                            Background="#E74C3C"
+                                                            Foreground="White"
+                                                            Width="36"
+                                                            Height="36"
+                                                            ToolTip="Удалить"
+                                                            materialDesign:ButtonAssist.CornerRadius="4">
+                                                        <materialDesign:PackIcon Kind="Delete" Width="18" Height="18"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                                </DataGrid>
+                            </ScrollViewer>
+                        </materialDesign:Card>
+                    </Grid>
+                    
+                    <materialDesign:Card Grid.Column="1" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                         Padding="20" 
+                                         Background="White"
+                                         Visibility="{Binding AdminProductsViewModel.IsFormVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="700">
+                            <StackPanel Margin="0,0,10,0">
+                                <TextBlock FontSize="18" FontWeight="Bold" 
+                                           Margin="0,0,0,20"
+                                           Foreground="#2C3E50">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Text" Value="Добавить товар"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AdminProductsViewModel.IsEditMode}" Value="True">
+                                                    <Setter Property="Text" Value="Редактировать товар"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                
+                                <TextBlock Text="Название:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Введите название"
+                                         Margin="0,0,0,20">
+                                    <TextBox.Text>
+                                        <Binding Path="AdminProductsViewModel.ProductName" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <helpers:RequiredValidationRule/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                
+                                <TextBlock Text="Описание:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <TextBox Text="{Binding AdminProductsViewModel.Description, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Введите описание"
+                                         TextWrapping="Wrap" 
+                                         AcceptsReturn="True" 
+                                         Height="80"
+                                         Margin="0,0,0,20"/>
+                                
+                                <TextBlock Text="Цена:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="0.00"
+                                         Margin="0,0,0,20"
+                                         PreviewTextInput="PriceTextBox_PreviewTextInput"
+                                         DataObject.Pasting="PriceTextBox_Pasting">
+                                    <TextBox.Text>
+                                        <Binding Path="AdminProductsViewModel.Price" UpdateSourceTrigger="PropertyChanged" TargetNullValue="">
+                                            <Binding.ValidationRules>
+                                                <helpers:PriceValidationRule/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                
+                                <TextBlock Text="Количество на складе:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="0"
+                                         Margin="0,0,0,20">
+                                    <TextBox.Text>
+                                        <Binding Path="AdminProductsViewModel.StockQuantity" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding.ValidationRules>
+                                                <helpers:QuantityValidationRule/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                
+                                <TextBlock Text="Категория:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <ComboBox ItemsSource="{Binding AdminProductsViewModel.Categories}" 
+                                          SelectedItem="{Binding AdminProductsViewModel.SelectedCategory}"
+                                          DisplayMemberPath="Name"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:HintAssist.Hint="Выберите категорию"
+                                          Margin="0,0,0,20"/>
+                                
+                                <TextBlock Text="Производитель:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <ComboBox ItemsSource="{Binding AdminProductsViewModel.Manufacturers}" 
+                                          SelectedItem="{Binding AdminProductsViewModel.SelectedManufacturer}"
+                                          DisplayMemberPath="Name"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:HintAssist.Hint="Выберите производителя"
+                                          Margin="0,0,0,20"/>
+                                
+                                <TextBlock Text="Артикул:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,8"
+                                           Foreground="#34495E"/>
+                                <TextBox Text="{Binding AdminProductsViewModel.ArticleNumber, UpdateSourceTrigger=PropertyChanged}" 
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="Введите артикул"
+                                         Margin="0,0,0,20"/>
+                                
+                                <TextBlock Text="Изображение товара:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,5"
+                                           Foreground="#34495E"/>
+                                
+                                <!-- Превью изображения -->
+                                <Border BorderBrush="#E0E0E0" 
+                                        BorderThickness="1" 
+                                        Background="#F8F9FA"
+                                        Height="200"
+                                        Margin="0,0,0,10"
+                                        CornerRadius="5">
+                                    <Grid>
+                                        <Image Source="{Binding AdminProductsViewModel.PreviewImage}" 
+                                               Stretch="Uniform"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               MaxHeight="200"
+                                               MaxWidth="300">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding AdminProductsViewModel.PreviewImage}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                        <TextBlock Text="Перетащите изображение сюда или нажмите кнопку загрузки" 
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="#9E9E9E"
+                                                   TextAlignment="Center"
+                                                   TextWrapping="Wrap"
+                                                   Margin="20">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding AdminProductsViewModel.PreviewImage}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- Область для drag-and-drop -->
+                                <Border x:Name="ImageDropArea"
+                                        BorderBrush="#BDC3C7" 
+                                        BorderThickness="2"
+                                        Background="Transparent"
+                                        Padding="15"
+                                        Margin="0,0,0,10"
+                                        CornerRadius="5"
+                                        AllowDrop="True"
+                                        Drop="ImageDropArea_Drop"
+                                        DragOver="ImageDropArea_DragOver"
+                                        DragLeave="ImageDropArea_DragLeave">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="BorderBrush" Value="#BDC3C7"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" Value="#3498DB"/>
+                                                    <Setter Property="Background" Value="#EBF5FB"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <materialDesign:PackIcon Kind="Image" Width="24" Height="24" Margin="0,0,10,0" Foreground="#7F8C8D"/>
+                                        <TextBlock Text="Перетащите изображение сюда" 
+                                                   Foreground="#7F8C8D"
+                                                   VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                                    <Button Command="{Binding AdminProductsViewModel.LoadImageCommand}" 
+                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            materialDesign:ButtonAssist.CornerRadius="5"
+                                            Margin="0,0,10,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="FolderImage" Width="20" Height="20" Margin="0,0,5,0"/>
+                                            <TextBlock Text="Выбрать файл"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Command="{Binding AdminProductsViewModel.ClearImageCommand}" 
+                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            materialDesign:ButtonAssist.CornerRadius="5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Delete" Width="20" Height="20" Margin="0,0,5,0"/>
+                                            <TextBlock Text="Очистить"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                
+                                <CheckBox Content="Доступен" 
+                                          IsChecked="{Binding AdminProductsViewModel.IsAvailable}" 
+                                          Margin="0,10,0,25"
+                                          Style="{StaticResource MaterialDesignCheckBox}"/>
+                                
+                                <Button Command="{Binding AdminProductsViewModel.SaveProductCommand}" 
+                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Background="#27AE60"
+                                        materialDesign:ButtonAssist.CornerRadius="5"
+                                        Height="50"
+                                        FontSize="16">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="ContentSave" Width="20" Height="20" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Сохранить" FontSize="16" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </materialDesign:Card>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Заказы">
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="400"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <materialDesign:Card Grid.Column="0" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                                         Padding="0"
+                                         Margin="0,0,20,0">
+                        <DataGrid ItemsSource="{Binding AdminOrdersViewModel.Orders}" 
+                                  SelectedItem="{Binding AdminOrdersViewModel.SelectedOrder}"
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  HeadersVisibility="Column" GridLinesVisibility="None"
+                                  SelectionMode="Single"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                                <DataGridTextColumn Header="Клиент" Binding="{Binding User.Email}" Width="*"/>
+                                <DataGridTextColumn Header="Дата заказа" Binding="{Binding OrderDate, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}" Width="150"/>
+                                <DataGridTextColumn Header="Дата доставки" Binding="{Binding DeliveryDate, StringFormat='{}{0:dd.MM.yyyy}'}" Width="120"/>
+                                <DataGridTextColumn Header="Сумма" Binding="{Binding TotalAmount, StringFormat='{}{0:N2} BYN'}" Width="120"/>
+                                <DataGridTemplateColumn Header="Статус" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Status, Converter={StaticResource StatusConverter}}"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Действие" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.AdminOrdersViewModel.DeleteOrderCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignIconButton}"
+                                                    Foreground="#E74C3C"
+                                                    ToolTip="Удалить"
+                                                    Visibility="{Binding Status, Converter={StaticResource OrderDeleteVisibilityConverter}}">
+                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </materialDesign:Card>
+                    
+                    <materialDesign:Card Grid.Column="1" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                         Padding="20" 
+                                         Background="White"
+                                         Visibility="{Binding AdminOrdersViewModel.SelectedOrder, Converter={StaticResource NullToVisibilityConverter}}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
+                            <StackPanel>
+                                <TextBlock Text="Детали заказа" 
+                                           FontSize="18" FontWeight="Bold" 
+                                           Margin="0,0,0,15"
+                                           Foreground="#2C3E50"/>
+                                
+                                <TextBlock Text="Статус:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,5"
+                                           Foreground="#34495E"/>
+                                <ComboBox SelectedItem="{Binding AdminOrdersViewModel.SelectedStatus}" 
+                                          ItemsSource="{Binding AdminOrdersViewModel.Statuses}" 
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          Margin="0,0,0,15">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Converter={StaticResource StatusConverter}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                
+                                <Button Command="{Binding AdminOrdersViewModel.UpdateOrderStatusCommand}" 
+                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                        Background="#3498DB"
+                                        materialDesign:ButtonAssist.CornerRadius="5"
+                                        Margin="0,0,0,20">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Update" Width="20" Height="20" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Обновить статус"/>
+                                    </StackPanel>
+                                </Button>
+                                
+                                <TextBlock Text="{Binding AdminOrdersViewModel.SelectedOrder.Id, StringFormat='Номер: #{0}'}" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding AdminOrdersViewModel.SelectedOrder.User.Email, StringFormat='Клиент: {0}'}" 
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding AdminOrdersViewModel.SelectedOrder.OrderDate, StringFormat='Дата: {0:dd.MM.yyyy HH:mm}'}" 
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding AdminOrdersViewModel.SelectedOrder.DeliveryDate, StringFormat='Доставка: {0:dd.MM.yyyy}'}" 
+                                           Margin="0,0,0,5"/>
+                                <TextBlock Text="{Binding AdminOrdersViewModel.SelectedOrder.TotalAmount, StringFormat='Сумма: {0:N2} BYN'}" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,10"/>
+                                
+                                <TextBlock Text="Товары:" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,10,0,5"/>
+                                <ItemsControl ItemsSource="{Binding AdminOrdersViewModel.SelectedOrder.OrderItems}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Margin="10,0,0,5">
+                                                <Run Text="• "/>
+                                                <Run Text="{Binding Product.Name}"/>
+                                                <Run Text=" x"/>
+                                                <Run Text="{Binding Quantity}"/>
+                                                <Run Text=" - "/>
+                                                <Run Text="{Binding Subtotal, StringFormat='{}{0:N2} BYN', Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </materialDesign:Card>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Клиенты">
+                <Grid Margin="20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="400"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <materialDesign:Card Grid.Column="0" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                                         Padding="0"
+                                         Margin="0,0,20,0">
+                        <DataGrid ItemsSource="{Binding AdminCustomersViewModel.Customers}" 
+                                  SelectedItem="{Binding AdminCustomersViewModel.SelectedCustomer}"
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  HeadersVisibility="Column" GridLinesVisibility="None"
+                                  SelectionMode="Single"
+                                  BorderThickness="0">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                                <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
+                                <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}" Width="150"/>
+                                <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}" Width="150"/>
+                                <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="150"/>
+                                <DataGridTextColumn Header="Адрес" Binding="{Binding Address}" Width="*"/>
+                                <DataGridTemplateColumn Header="Действие" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.AdminCustomersViewModel.DeleteCustomerCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource MaterialDesignIconButton}"
+                                                    Foreground="#E74C3C"
+                                                    ToolTip="Удалить клиента">
+                                                <materialDesign:PackIcon Kind="Delete" Width="16" Height="16"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </materialDesign:Card>
+                    
+                    <materialDesign:Card Grid.Column="1" 
+                                         materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                         Padding="20" 
+                                         Background="White"
+                                         Visibility="{Binding AdminCustomersViewModel.SelectedCustomer, Converter={StaticResource NullToVisibilityConverter}}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="600">
+                            <StackPanel>
+                                <TextBlock Text="Заказы клиента" 
+                                           FontSize="18" FontWeight="Bold" 
+                                           Margin="0,0,0,15"
+                                           Foreground="#2C3E50"/>
+                                <TextBlock Text="{Binding AdminCustomersViewModel.SelectedCustomer.Email}" 
+                                           FontWeight="SemiBold" 
+                                           Margin="0,0,0,15"/>
+                                
+                                <DataGrid ItemsSource="{Binding AdminCustomersViewModel.CustomerOrders}" 
+                                          AutoGenerateColumns="False" IsReadOnly="True"
+                                          HeadersVisibility="Column" GridLinesVisibility="None"
+                                          BorderThickness="0">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                                        <DataGridTextColumn Header="Дата" Binding="{Binding OrderDate, StringFormat='{}{0:dd.MM.yyyy}'}" Width="100"/>
+                                        <DataGridTextColumn Header="Сумма" Binding="{Binding TotalAmount, StringFormat='{}{0:N2} BYN'}" Width="*"/>
+                                        <DataGridTemplateColumn Header="Статус" Width="*">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Status, Converter={StaticResource StatusConverter}}"/>
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </materialDesign:Card>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

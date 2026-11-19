@@ -1,0 +1,166 @@
+<Window x:Class="course_project_shop_musical_instruments.Views.LoginView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:helpers="clr-namespace:course_project_shop_musical_instruments.Helpers"
+        mc:Ignorable="d"
+        Title="Вход в систему"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Background="#F5F5F5">
+    <Window.Resources>
+        <helpers:LoginModeConverter x:Key="LoginModeConverter"/>
+        <helpers:ButtonTextConverter x:Key="ButtonTextConverter"/>
+        <helpers:ToggleTextConverter x:Key="ToggleTextConverter"/>
+        <helpers:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+    </Window.Resources>
+    <Grid>
+        <materialDesign:Card 
+            materialDesign:ShadowAssist.ShadowDepth="Depth3"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Width="450"
+            Padding="40"
+            Background="White">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center" 
+                            Margin="0,0,0,30">
+                    <materialDesign:PackIcon Kind="Music" 
+                                             Width="48" Height="48" 
+                                             Margin="0,0,15,0"
+                                             Foreground="#673AB7"/>
+                    <TextBlock Text="PianoBar" 
+                               FontSize="24" FontWeight="Bold" 
+                               Foreground="#2C3E50"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <TextBlock Text="{Binding IsLoginMode, Converter={StaticResource LoginModeConverter}}" 
+                           FontSize="20" FontWeight="SemiBold" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,0,0,30"
+                           Foreground="#34495E"/>
+
+                <TextBox materialDesign:HintAssist.Hint="Email"
+                         materialDesign:HintAssist.HelperText="example@gmail.com"
+                         materialDesign:HintAssist.IsFloating="True"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Margin="0,0,0,15"
+                         FontSize="14">
+                    <TextBox.Text>
+                        <Binding Path="Email" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <helpers:EmailValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <PasswordBox x:Name="PasswordBox" 
+                            materialDesign:HintAssist.Hint="Пароль"
+                            materialDesign:HintAssist.IsFloating="True"
+                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                            Margin="0,0,0,15"
+                            FontSize="14"/>
+
+                <StackPanel x:Name="RegisterFields" 
+                           Visibility="{Binding IsLoginMode, Converter={StaticResource InverseBoolToVisibilityConverter}}"
+                           Margin="0,0,0,15">
+                    <TextBox x:Name="FirstNameTextBox"
+                             materialDesign:HintAssist.Hint="Имя"
+                             materialDesign:HintAssist.HelperText="Иван"
+                             materialDesign:HintAssist.IsFloating="True"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,15"
+                             FontSize="14"
+                             PreviewTextInput="FirstNameTextBox_PreviewTextInput"
+                             DataObject.Pasting="FirstNameTextBox_Pasting">
+                        <TextBox.Text>
+                            <Binding Path="FirstName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <helpers:RequiredValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
+                    <TextBox x:Name="LastNameTextBox"
+                             materialDesign:HintAssist.Hint="Фамилия"
+                             materialDesign:HintAssist.HelperText="Иванов"
+                             materialDesign:HintAssist.IsFloating="True"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             Margin="0,0,0,15"
+                             FontSize="14"
+                             PreviewTextInput="LastNameTextBox_PreviewTextInput"
+                             DataObject.Pasting="LastNameTextBox_Pasting">
+                        <TextBox.Text>
+                            <Binding Path="LastName" UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <helpers:RequiredValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
+                <TextBox x:Name="PhoneTextBox"
+                         materialDesign:HintAssist.Hint="Телефон"
+                         materialDesign:HintAssist.IsFloating="True"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         MaxLength="13"
+                         PreviewTextInput="PhoneTextBox_PreviewTextInput"
+                         DataObject.Pasting="PhoneTextBox_Pasting">
+                    <TextBox.Text>
+                        <Binding Path="Phone" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <helpers:RequiredValidationRule/>
+                                <helpers:PhoneValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+
+                <TextBox x:Name="AddressTextBox"
+                         materialDesign:HintAssist.Hint="Адрес"
+                         materialDesign:HintAssist.IsFloating="True"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Margin="0,0,0,15"
+                         FontSize="14"
+                         PreviewTextInput="AddressTextBox_PreviewTextInput"
+                         DataObject.Pasting="AddressTextBox_Pasting">
+                    <TextBox.Text>
+                        <Binding Path="Address" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <helpers:RequiredValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </TextBox.Text>
+                </TextBox>
+                </StackPanel>
+
+                <Button Command="{Binding LoginCommand}" 
+                        Margin="0,10,0,15" 
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        Height="45"
+                        FontSize="16"
+                        materialDesign:ButtonAssist.CornerRadius="5">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Login" Width="20" Height="20" Margin="0,0,8,0"/>
+                        <TextBlock Text="{Binding IsLoginMode, Converter={StaticResource ButtonTextConverter}}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding ToggleModeCommand}" 
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        HorizontalAlignment="Center"
+                        Foreground="#673AB7">
+                    <TextBlock Text="{Binding IsLoginMode, Converter={StaticResource ToggleTextConverter}}"/>
+                </Button>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>
